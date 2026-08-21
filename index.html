@@ -535,6 +535,43 @@
               <!-- Pattern items draggable/removable -->
             </div>
 
+            <!-- Custom Single Step Time Customizer -->
+            <div class="custom-time-adder glass-inner p-3 mt-3" style="border-radius: var(--radius-md); border: 1px solid var(--glass-inner-border);">
+              <h5 style="font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-clock-rotate-left color-primary"></i>
+                <span>تخصيص يوم بدقة (اختيار 12س، 8س، أو تحديد أوقات البداية والنهاية):</span>
+              </h5>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label class="form-label">نوع وساعات الوردية:</label>
+                  <select id="custom-add-type-select" class="form-control glass-input">
+                    <option value="12D" data-start="07:00" data-end="19:00" data-hours="12" data-name="دوام 12 ساعة (نهار)">دوام 12 ساعة - نهار (07:00 ص - 07:00 م)</option>
+                    <option value="12N" data-start="19:00" data-end="07:00" data-hours="12" data-name="دوام 12 ساعة (ليل)">دوام 12 ساعة - ليل (07:00 م - 07:00 ص)</option>
+                    <option value="8D" data-start="08:00" data-end="16:00" data-hours="8" data-name="دوام 8 ساعات (صباحي)">دوام 8 ساعات - صباحي (08:00 ص - 04:00 م)</option>
+                    <option value="8E" data-start="16:00" data-end="00:00" data-hours="8" data-name="دوام 8 ساعات (مسائي)">دوام 8 ساعات - مسائي (04:00 م - 12:00 ص)</option>
+                    <option value="8N" data-start="00:00" data-end="08:00" data-hours="8" data-name="دوام 8 ساعات (ليلي)">دوام 8 ساعات - ليلي (12:00 ص - 08:00 ص)</option>
+                    <option value="24H" data-start="08:00" data-end="08:00" data-hours="24" data-name="استلام كامل (24 ساعة)">استلام كامل 24 ساعة (08:00 ص - 08:00 ص)</option>
+                    <option value="6H" data-start="09:00" data-end="15:00" data-hours="6" data-name="دوام 6 ساعات (جزئي)">دوام 6 ساعات - جزئي (09:00 ص - 03:00 م)</option>
+                    <option value="CUSTOM_WORK" data-start="08:00" data-end="16:00" data-hours="8" data-name="دوام مخصص">دوام مخصص التوقيت</option>
+                    <option value="O" data-start="" data-end="" data-hours="0" data-name="راحة / إجازة">يوم راحة / إجازة (Off)</option>
+                  </select>
+                </div>
+                <div class="form-group col-3">
+                  <label class="form-label">وقت البدء:</label>
+                  <input type="time" id="custom-add-start-time" class="form-control glass-input" value="07:00">
+                </div>
+                <div class="form-group col-3">
+                  <label class="form-label">وقت الانتهاء:</label>
+                  <input type="time" id="custom-add-end-time" class="form-control glass-input" value="19:00">
+                </div>
+                <div class="form-group col-2" style="display: flex; align-items: flex-end;">
+                  <button type="button" class="btn btn-primary w-100" id="btn-custom-add-custom-step" style="height: 42px; font-weight: 700;">
+                    <i class="fa-solid fa-plus"></i> إضافة
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="form-row mt-3">
               <div class="form-group col-6">
                 <label class="form-label">تاريخ بدء النمط (اليوم الأول):</label>

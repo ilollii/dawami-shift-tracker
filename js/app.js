@@ -304,17 +304,92 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function normalizePatternStep(raw) {
+    if (typeof raw === 'object' && raw !== null) return raw;
+    const isAr = document.documentElement.getAttribute('lang') === 'ar';
+    
+    if (raw === '12D') {
+      return { type: 'WORK_12H_DAY', code: '12D', title: isAr ? '12س نهار' : '12h Day', hours: 12, startTime: '07:00', endTime: '19:00', isWork: true, colorClass: 'pill-day12' };
+    }
+    if (raw === '12N') {
+      return { type: 'WORK_12H_NIGHT', code: '12N', title: isAr ? '12س ليل' : '12h Night', hours: 12, startTime: '19:00', endTime: '07:00', isWork: true, colorClass: 'pill-night12' };
+    }
+    if (raw === '8D' || raw === 'D') {
+      return { type: 'WORK_DAY', code: '8D', title: isAr ? '8س صباحي' : '8h Day', hours: 8, startTime: '08:00', endTime: '16:00', isWork: true, colorClass: 'pill-day' };
+    }
+    if (raw === '8E' || raw === 'E') {
+      return { type: 'WORK_EVENING', code: '8E', title: isAr ? '8س مسائي' : '8h Eve', hours: 8, startTime: '16:00', endTime: '00:00', isWork: true, colorClass: 'pill-eve' };
+    }
+    if (raw === '8N' || raw === 'N') {
+      return { type: 'WORK_NIGHT', code: '8N', title: isAr ? '8س ليلي' : '8h Night', hours: 8, startTime: '00:00', endTime: '08:00', isWork: true, colorClass: 'pill-night' };
+    }
+    if (raw === '24H' || raw === '24') {
+      return { type: 'DUTY_24H', code: '24H', title: isAr ? 'استلام 24س' : '24h Duty', hours: 24, startTime: '08:00', endTime: '08:00', isWork: true, colorClass: 'pill-duty24' };
+    }
+    if (raw === '6H') {
+      return { type: 'WORK_6H', code: '6H', title: isAr ? '6س جزئي' : '6h Part-time', hours: 6, startTime: '09:00', endTime: '15:00', isWork: true, colorClass: 'pill-work6' };
+    }
+    return { type: 'OFF', code: 'O', title: isAr ? 'راحة' : 'Off', hours: 0, startTime: null, endTime: null, isWork: false, colorClass: 'pill-off' };
+  }
+
   function initCustomPatternBuilder() {
     renderCustomPatternStrip();
 
-    // Custom add chip buttons
+    // Quick add chip buttons
     document.querySelectorAll('.add-shift-chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const type = btn.getAttribute('data-type');
-        customPatternDraft.push(type);
+        customPatternDraft.push(normalizePatternStep(type));
         renderCustomPatternStrip();
       });
     });
+
+    // Custom Time Adder Select auto-populate
+    const addTypeSelect = document.getElementById('custom-add-type-select');
+    const addStartTime = document.getElementById('custom-add-start-time');
+    const addEndTime = document.getElementById('custom-add-end-time');
+    const btnAddCustomStep = document.getElementById('btn-custom-add-custom-step');
+
+    if (addTypeSelect && addStartTime && addEndTime) {
+      addTypeSelect.addEventListener('change', () => {
+        const opt = addTypeSelect.options[addTypeSelect.selectedIndex];
+        const s = opt.getAttribute('data-start');
+        const e = opt.getAttribute('data-end');
+        if (s !== null && s !== '') addStartTime.value = s;
+        if (e !== null && e !== '') addEndTime.value = e;
+      });
+    }
+
+    if (btnAddCustomStep && addTypeSelect) {
+      btnAddCustomStep.addEventListener('click', () => {
+        const opt = addTypeSelect.options[addTypeSelect.selectedIndex];
+        const typeCode = addTypeSelect.value;
+        const sTime = addStartTime ? addStartTime.value : '08:00';
+        const eTime = addEndTime ? addEndTime.value : '16:00';
+        const title = opt.getAttribute('data-name') || opt.text;
+        const isOff = typeCode === 'O';
+        
+        let calculatedHours = 0;
+        if (!isOff) {
+          calculatedHours = engine.calcHours(sTime, eTime) || (typeCode === '24H' ? 24 : 8);
+        }
+
+        const newStep = {
+          type: typeCode === 'O' ? 'OFF' : (typeCode === '24H' ? 'DUTY_24H' : (typeCode === '12D' ? 'WORK_12H_DAY' : (typeCode === '12N' ? 'WORK_12H_NIGHT' : 'WORK_DAY'))),
+          code: typeCode,
+          title: isOff ? 'راحة / إجازة' : `${title} (${calculatedHours}س)`,
+          hours: calculatedHours,
+          startTime: isOff ? null : sTime,
+          endTime: isOff ? null : eTime,
+          isWork: !isOff,
+          colorClass: isOff ? 'pill-off' : (calculatedHours >= 24 ? 'pill-duty24' : (calculatedHours >= 12 ? 'pill-day12' : 'pill-day'))
+        };
+
+        customPatternDraft.push(newStep);
+        renderCustomPatternStrip();
+        showToast('تمت إضافة اليوم إلى دورة الدوام!', 'success');
+      });
+    }
 
     const customDateInput = document.getElementById('custom-start-date');
     if (customDateInput) {
@@ -342,26 +417,22 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const typeLabels = {
-      '24H': isAr ? 'استلام 24س' : '24h Duty',
-      '12D': isAr ? '12س نهار' : '12h Day',
-      '12N': isAr ? '12س ليل' : '12h Night',
-      '8D': isAr ? '8س صباحي' : '8h Day',
-      '8E': isAr ? '8س مسائي' : '8h Eve',
-      '8N': isAr ? '8س ليلي' : '8h Night',
-      '6H': isAr ? '6س جزئي' : '6h Shift',
-      'D': isAr ? 'صباحي (8س)' : 'Day (8h)',
-      'E': isAr ? 'مسائي (8س)' : 'Eve (8h)',
-      'N': isAr ? 'ليلي (8س)' : 'Night (8h)',
-      'O': isAr ? 'راحة' : 'Off'
-    };
+    customPatternDraft.forEach((rawStep, index) => {
+      const step = normalizePatternStep(rawStep);
+      // Ensure normalized in array
+      customPatternDraft[index] = step;
 
-    customPatternDraft.forEach((code, index) => {
       const item = document.createElement('div');
-      item.className = `strip-item type-${code}`;
+      item.className = `strip-item type-${step.code || 'D'}`;
+      
+      const timeInfo = step.isWork && step.startTime && step.endTime ? `<small style="font-size:10.5px;opacity:0.9;display:block;">⏰ ${step.startTime} - ${step.endTime} (${step.hours}س)</small>` : '';
+
       item.innerHTML = `
-        <span>${index + 1}. ${typeLabels[code] || code}</span>
-        <button type="button" class="btn-remove-step" data-index="${index}" title="حذف">&times;</button>
+        <div style="text-align: right; min-width: 0;">
+          <div style="font-weight: 800;">${index + 1}. ${step.title || step.code}</div>
+          ${timeInfo}
+        </div>
+        <button type="button" class="btn-remove-step" data-index="${index}" title="حذف" style="margin-right: 6px; font-size: 14px;">&times;</button>
       `;
 
       item.querySelector('.btn-remove-step').addEventListener('click', (e) => {

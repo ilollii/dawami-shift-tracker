@@ -465,7 +465,7 @@ class ShiftEngine {
       const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
       const patternLen = pattern.length;
       const patternIndex = ((diffDays % patternLen) + patternLen) % patternLen;
-      const shiftCode = pattern[patternIndex];
+      const rawItem = pattern[patternIndex];
 
       const defaultShiftMapping = {
         '24H': SHIFT_TYPES.DUTY_24H,
@@ -488,7 +488,35 @@ class ShiftEngine {
         'OT': SHIFT_TYPES.OVERTIME
       };
 
-      const shiftConf = (custom.shiftConfigs && custom.shiftConfigs[shiftCode]) || defaultShiftMapping[shiftCode] || SHIFT_TYPES.OFF;
+      let shiftConf;
+      let shiftCode;
+
+      if (typeof rawItem === 'object' && rawItem !== null) {
+        shiftCode = rawItem.code || rawItem.type || 'D';
+        const baseConf = SHIFT_TYPES[rawItem.type] || defaultShiftMapping[shiftCode] || (rawItem.isWork ? SHIFT_TYPES.WORK_DAY : SHIFT_TYPES.OFF);
+        
+        let calculatedHours = rawItem.hours;
+        if (calculatedHours === undefined && rawItem.startTime && rawItem.endTime) {
+          calculatedHours = this.calcHours(rawItem.startTime, rawItem.endTime);
+        }
+
+        shiftConf = {
+          ...baseConf,
+          ...rawItem,
+          id: rawItem.type || baseConf.id,
+          nameAr: rawItem.title || rawItem.nameAr || baseConf.nameAr,
+          nameEn: rawItem.nameEn || baseConf.nameEn,
+          startTime: rawItem.startTime !== undefined ? rawItem.startTime : baseConf.startTime,
+          endTime: rawItem.endTime !== undefined ? rawItem.endTime : baseConf.endTime,
+          hours: calculatedHours !== undefined ? calculatedHours : (baseConf.hours || (baseConf.isWork ? 8 : 0)),
+          isWork: rawItem.isWork !== undefined ? rawItem.isWork : baseConf.isWork,
+          colorClass: rawItem.colorClass || baseConf.colorClass || (rawItem.isWork ? 'pill-work' : 'pill-off'),
+          dotClass: rawItem.dotClass || baseConf.dotClass || (rawItem.isWork ? 'dot-work' : 'dot-off')
+        };
+      } else {
+        shiftCode = rawItem;
+        shiftConf = (custom.shiftConfigs && custom.shiftConfigs[shiftCode]) || defaultShiftMapping[shiftCode] || SHIFT_TYPES.OFF;
+      }
 
       return {
         dateKey,
