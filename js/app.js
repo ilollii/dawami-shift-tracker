@@ -321,11 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return { type: 'WORK_EVENING', code: '8E', title: isAr ? '8س مسائي' : '8h Eve', hours: 8, startTime: '16:00', endTime: '00:00', isWork: true, colorClass: 'pill-eve' };
     }
     if (raw === '8N' || raw === 'N') {
-      return { type: 'WORK_NIGHT', code: '8N', title: isAr ? '8س ليلي' : '8h Night', hours: 8, startTime: '00:00', endTime: '08:00', isWork: true, colorClass: 'pill-night' };
-    }
-    if (raw === '24H' || raw === '24') {
-      return { type: 'DUTY_24H', code: '24H', title: isAr ? 'استلام 24س' : '24h Duty', hours: 24, startTime: '08:00', endTime: '08:00', isWork: true, colorClass: 'pill-duty24' };
-    }
     if (raw === '6H') {
       return { type: 'WORK_6H', code: '6H', title: isAr ? '6س جزئي' : '6h Part-time', hours: 6, startTime: '09:00', endTime: '15:00', isWork: true, colorClass: 'pill-work6' };
     }
@@ -335,59 +330,102 @@ document.addEventListener('DOMContentLoaded', () => {
   function initCustomPatternBuilder() {
     renderCustomPatternStrip();
 
-    // Quick add chip buttons
-    document.querySelectorAll('.add-shift-chip').forEach(btn => {
+    const startInput = document.getElementById('manual-step-start-time');
+    const endInput = document.getElementById('manual-step-end-time');
+    const titleInput = document.getElementById('manual-step-title');
+    const hoursBadge = document.getElementById('live-calculated-hours-badge');
+    const btnAddStep = document.getElementById('btn-add-manual-pattern-step');
+    const btnClearStrip = document.getElementById('btn-clear-pattern-strip');
+
+    function updateLiveHours() {
+      if (!startInput || !endInput || !hoursBadge) return;
+      const s = startInput.value;
+      const e = endInput.value;
+      const t = titleInput ? titleInput.value : '';
+
+      if (t.includes('راحة') || t.includes('إجازة') || (!s && !e)) {
+        hoursBadge.textContent = '🏖️ يوم راحة / إجازة (0س)';
+        hoursBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+        hoursBadge.style.color = '#34d399';
+        return;
+      }
+
+      const h = engine.calcHours(s, e);
+      hoursBadge.textContent = `⏱️ ${h} ساعة عمل (${s} إلى ${e})`;
+      if (h >= 24) {
+        hoursBadge.style.background = 'rgba(234, 88, 12, 0.25)';
+        hoursBadge.style.color = '#fb923c';
+      } else if (h >= 12) {
+        hoursBadge.style.background = 'rgba(14, 165, 233, 0.25)';
+        hoursBadge.style.color = '#38bdf8';
+      } else {
+        hoursBadge.style.background = 'rgba(99, 102, 241, 0.25)';
+        hoursBadge.style.color = '#818cf8';
+      }
+    }
+
+    if (startInput) startInput.addEventListener('input', updateLiveHours);
+    if (endInput) endInput.addEventListener('input', updateLiveHours);
+
+    // Quick Time Fillers buttons
+    document.querySelectorAll('.btn-quick-fill-time').forEach(btn => {
       btn.addEventListener('click', () => {
-        const type = btn.getAttribute('data-type');
-        customPatternDraft.push(normalizePatternStep(type));
-        renderCustomPatternStrip();
+        const s = btn.getAttribute('data-start');
+        const e = btn.getAttribute('data-end');
+        const t = btn.getAttribute('data-title');
+
+        if (s !== null && startInput) startInput.value = s;
+        if (e !== null && endInput) endInput.value = e;
+        if (t !== null && titleInput) titleInput.value = t;
+
+        updateLiveHours();
       });
     });
 
-    // Custom Time Adder Select auto-populate
-    const addTypeSelect = document.getElementById('custom-add-type-select');
-    const addStartTime = document.getElementById('custom-add-start-time');
-    const addEndTime = document.getElementById('custom-add-end-time');
-    const btnAddCustomStep = document.getElementById('btn-custom-add-custom-step');
+    // Add Step to custom pattern
+    if (btnAddStep) {
+      btnAddStep.addEventListener('click', () => {
+        const s = startInput ? startInput.value : '08:00';
+        const e = endInput ? endInput.value : '16:00';
+        let t = titleInput && titleInput.value.trim() ? titleInput.value.trim() : 'دوام';
 
-    if (addTypeSelect && addStartTime && addEndTime) {
-      addTypeSelect.addEventListener('change', () => {
-        const opt = addTypeSelect.options[addTypeSelect.selectedIndex];
-        const s = opt.getAttribute('data-start');
-        const e = opt.getAttribute('data-end');
-        if (s !== null && s !== '') addStartTime.value = s;
-        if (e !== null && e !== '') addEndTime.value = e;
-      });
-    }
+        const isOff = t.includes('راحة') || t.includes('إجازة') || (!s && !e);
+        let h = 0;
+        let typeCode = 'D';
 
-    if (btnAddCustomStep && addTypeSelect) {
-      btnAddCustomStep.addEventListener('click', () => {
-        const opt = addTypeSelect.options[addTypeSelect.selectedIndex];
-        const typeCode = addTypeSelect.value;
-        const sTime = addStartTime ? addStartTime.value : '08:00';
-        const eTime = addEndTime ? addEndTime.value : '16:00';
-        const title = opt.getAttribute('data-name') || opt.text;
-        const isOff = typeCode === 'O';
-        
-        let calculatedHours = 0;
-        if (!isOff) {
-          calculatedHours = engine.calcHours(sTime, eTime) || (typeCode === '24H' ? 24 : 8);
+        if (isOff) {
+          typeCode = 'O';
+          t = 'يوم راحة / إجازة';
+        } else {
+          h = engine.calcHours(s, e);
+          if (h >= 24) typeCode = '24H';
+          else if (h >= 12) typeCode = (s >= '18:00' || s <= '04:00') ? '12N' : '12D';
+          else typeCode = '8D';
         }
 
         const newStep = {
-          type: typeCode === 'O' ? 'OFF' : (typeCode === '24H' ? 'DUTY_24H' : (typeCode === '12D' ? 'WORK_12H_DAY' : (typeCode === '12N' ? 'WORK_12H_NIGHT' : 'WORK_DAY'))),
+          type: isOff ? 'OFF' : (typeCode === '24H' ? 'DUTY_24H' : (typeCode === '12D' ? 'WORK_12H_DAY' : (typeCode === '12N' ? 'WORK_12H_NIGHT' : 'WORK_DAY'))),
           code: typeCode,
-          title: isOff ? 'راحة / إجازة' : `${title} (${calculatedHours}س)`,
-          hours: calculatedHours,
-          startTime: isOff ? null : sTime,
-          endTime: isOff ? null : eTime,
+          title: t,
+          hours: h,
+          startTime: isOff ? null : s,
+          endTime: isOff ? null : e,
           isWork: !isOff,
-          colorClass: isOff ? 'pill-off' : (calculatedHours >= 24 ? 'pill-duty24' : (calculatedHours >= 12 ? 'pill-day12' : 'pill-day'))
+          colorClass: isOff ? 'pill-off' : (h >= 24 ? 'pill-duty24' : (h >= 12 ? 'pill-day12' : 'pill-day'))
         };
 
         customPatternDraft.push(newStep);
         renderCustomPatternStrip();
-        showToast('تمت إضافة اليوم إلى دورة الدوام!', 'success');
+        showToast(`تمت إضافة [${t}] (${isOff ? 'راحة' : h + ' ساعات'}) للدورة! ✨`, 'success');
+      });
+    }
+
+    if (btnClearStrip) {
+      btnClearStrip.addEventListener('click', () => {
+        if (customPatternDraft.length === 0) return;
+        customPatternDraft = [];
+        renderCustomPatternStrip();
+        showToast('تم مسح جميع أيام الدورة', 'info');
       });
     }
 
@@ -400,6 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (customNameInput && config.custom) {
       customNameInput.value = config.custom.name || 'ورديتي المخصصة';
     }
+
+    updateLiveHours();
   }
 
   function renderCustomPatternStrip() {
@@ -413,32 +453,58 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lenLabel) lenLabel.textContent = customPatternDraft.length;
 
     if (customPatternDraft.length === 0) {
-      strip.innerHTML = `<span style="color:var(--text-muted);font-size:12px;">${isAr ? 'أضف أيام الوردية والراحة لتكوين النمط' : 'Add shifts and off-days to build sequence'}</span>`;
+      strip.innerHTML = `<span style="color:var(--text-muted);font-size:12px;padding:8px 0;">${isAr ? 'لم تتم إضافة أي أيام بعد. حدد وقت البداية والنهاية بالأعلى واضغط "+ إضافة لجدول الدورة".' : 'No days added yet. Set your start and end times above and click Add.'}</span>`;
       return;
     }
 
     customPatternDraft.forEach((rawStep, index) => {
       const step = normalizePatternStep(rawStep);
-      // Ensure normalized in array
       customPatternDraft[index] = step;
 
       const item = document.createElement('div');
       item.className = `strip-item type-${step.code || 'D'}`;
+      item.style.cursor = 'pointer';
+      item.title = 'انقر لتعديل وقت هذا اليوم';
       
-      const timeInfo = step.isWork && step.startTime && step.endTime ? `<small style="font-size:10.5px;opacity:0.9;display:block;">⏰ ${step.startTime} - ${step.endTime} (${step.hours}س)</small>` : '';
+      const timeInfo = step.isWork && step.startTime && step.endTime 
+        ? `<small style="font-size:10.5px;opacity:0.95;display:block;font-family:var(--font-code);">⏰ ${step.startTime} - ${step.endTime} (${step.hours}س)</small>` 
+        : `<small style="font-size:10.5px;opacity:0.95;display:block;">🏖️ عطلة كاملة</small>`;
 
       item.innerHTML = `
         <div style="text-align: right; min-width: 0;">
-          <div style="font-weight: 800;">${index + 1}. ${step.title || step.code}</div>
+          <div style="font-weight: 800; font-size: 12px;">${index + 1}. ${step.title || step.code}</div>
           ${timeInfo}
         </div>
-        <button type="button" class="btn-remove-step" data-index="${index}" title="حذف" style="margin-right: 6px; font-size: 14px;">&times;</button>
+        <button type="button" class="btn-remove-step" data-index="${index}" title="حذف هذا اليوم" style="margin-right: 6px; font-size: 15px; padding: 0 4px;">&times;</button>
       `;
 
       item.querySelector('.btn-remove-step').addEventListener('click', (e) => {
         e.stopPropagation();
         customPatternDraft.splice(index, 1);
         renderCustomPatternStrip();
+      });
+
+      // Clicking on any item loads its times into the editor above
+      item.addEventListener('click', () => {
+        const startInput = document.getElementById('manual-step-start-time');
+        const endInput = document.getElementById('manual-step-end-time');
+        const titleInput = document.getElementById('manual-step-title');
+
+        if (step.isWork) {
+          if (startInput && step.startTime) startInput.value = step.startTime;
+          if (endInput && step.endTime) endInput.value = step.endTime;
+          if (titleInput) titleInput.value = step.title || 'دوام';
+          showToast(`تم تحميل أوقات [اليوم ${index + 1}] في الخانات بالأعلى لتعديلها ✨`, 'info');
+        } else {
+          if (titleInput) titleInput.value = 'يوم راحة';
+          showToast(`[اليوم ${index + 1}] هو يوم راحة`, 'info');
+        }
+
+        const hoursBadge = document.getElementById('live-calculated-hours-badge');
+        if (hoursBadge && step.isWork && step.startTime && step.endTime) {
+          const h = engine.calcHours(step.startTime, step.endTime);
+          hoursBadge.textContent = `⏱️ ${h} ساعة عمل (${step.startTime} إلى ${step.endTime})`;
+        }
       });
 
       strip.appendChild(item);

@@ -1317,7 +1317,24 @@ body[dir="ltr"] .day-type-tag {
   }
 }
 
+@media (max-width: 768px) {
+  .custom-time-setter-card .form-row {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .custom-time-setter-card .form-row .form-group:nth-child(3),
+  .custom-time-setter-card .form-row .form-group:nth-child(4) {
+    grid-column: span 2;
+  }
+}
+
 @media (max-width: 480px) {
+  .custom-time-setter-card .form-row {
+    grid-template-columns: 1fr !important;
+  }
+  .custom-time-setter-card .form-row .form-group:nth-child(3),
+  .custom-time-setter-card .form-row .form-group:nth-child(4) {
+    grid-column: span 1;
+  }
   .metrics-grid {
     grid-template-columns: 1fr;
   }

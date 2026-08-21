@@ -497,79 +497,94 @@
 
         <!-- 3. Custom Pattern Tab -->
         <div class="setting-tab-content" id="tab-custom">
-          <p class="tab-description">أنشئ نمطاً مخصصاً بأي تتابع للأيام (مثال: 2 صباحي، 2 مسائي، 2 ليلي، 4 راحة):</p>
+          <p class="tab-description">أنشئ نمط دورتك الخاصة وحدد وقت البداية والنهاية وساعات العمل لكل يوم بنفسك:</p>
           
           <div class="custom-builder-container">
-            <div class="builder-actions-bar">
-              <span class="sequence-length-label">طول الدورة: <strong id="custom-pattern-length">0</strong> أيام</span>
-              <div class="quick-add-chips" style="flex-wrap: wrap;">
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="24H">
-                  <i class="fa-solid fa-plus"></i> + استلام 24س
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="12D" style="background: rgba(14, 165, 233, 0.2); border-color: rgba(14, 165, 233, 0.4);">
-                  <i class="fa-solid fa-plus"></i> + 12س نهار
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="12N" style="background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.4);">
-                  <i class="fa-solid fa-plus"></i> + 12س ليل
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8D">
-                  <i class="fa-solid fa-plus"></i> + 8س صباحي
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8E">
-                  <i class="fa-solid fa-plus"></i> + 8س مسائي
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8N">
-                  <i class="fa-solid fa-plus"></i> + 8س ليلي
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="6H">
-                  <i class="fa-solid fa-plus"></i> + 6س جزئي
-                </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="O" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4);">
-                  <i class="fa-solid fa-plus"></i> + راحة
-                </button>
+            
+            <!-- Manual Time Setter Box (تحديد الوقت والبداية والنهاية يدوياً) -->
+            <div class="custom-time-setter-card glass-inner p-3 mb-3" style="border-radius: var(--radius-md); border: 1.5px solid rgba(16, 185, 129, 0.35); background: rgba(15, 23, 42, 0.65);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <span style="font-weight: 800; font-size: 13.5px; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-regular fa-clock" style="color: var(--emerald-500); font-size: 16px;"></i>
+                  <span>حدد وقت البداية والنهاية لليوم القادم في الدورة:</span>
+                </span>
+                <span class="badge-hours-live" id="live-calculated-hours-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                  ⏱️ 12 ساعة عمل
+                </span>
               </div>
-            </div>
 
-            <!-- Pattern Sequence Visual Strip -->
-            <div class="pattern-sequence-strip" id="custom-pattern-strip">
-              <!-- Pattern items draggable/removable -->
-            </div>
-
-            <!-- Custom Single Step Time Customizer -->
-            <div class="custom-time-adder glass-inner p-3 mt-3" style="border-radius: var(--radius-md); border: 1px solid var(--glass-inner-border);">
-              <h5 style="font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-clock-rotate-left color-primary"></i>
-                <span>تخصيص يوم بدقة (اختيار 12س، 8س، أو تحديد أوقات البداية والنهاية):</span>
-              </h5>
-              <div class="form-row">
-                <div class="form-group col-4">
-                  <label class="form-label">نوع وساعات الوردية:</label>
-                  <select id="custom-add-type-select" class="form-control glass-input">
-                    <option value="12D" data-start="07:00" data-end="19:00" data-hours="12" data-name="دوام 12 ساعة (نهار)">دوام 12 ساعة - نهار (07:00 ص - 07:00 م)</option>
-                    <option value="12N" data-start="19:00" data-end="07:00" data-hours="12" data-name="دوام 12 ساعة (ليل)">دوام 12 ساعة - ليل (07:00 م - 07:00 ص)</option>
-                    <option value="8D" data-start="08:00" data-end="16:00" data-hours="8" data-name="دوام 8 ساعات (صباحي)">دوام 8 ساعات - صباحي (08:00 ص - 04:00 م)</option>
-                    <option value="8E" data-start="16:00" data-end="00:00" data-hours="8" data-name="دوام 8 ساعات (مسائي)">دوام 8 ساعات - مسائي (04:00 م - 12:00 ص)</option>
-                    <option value="8N" data-start="00:00" data-end="08:00" data-hours="8" data-name="دوام 8 ساعات (ليلي)">دوام 8 ساعات - ليلي (12:00 ص - 08:00 ص)</option>
-                    <option value="24H" data-start="08:00" data-end="08:00" data-hours="24" data-name="استلام كامل (24 ساعة)">استلام كامل 24 ساعة (08:00 ص - 08:00 ص)</option>
-                    <option value="6H" data-start="09:00" data-end="15:00" data-hours="6" data-name="دوام 6 ساعات (جزئي)">دوام 6 ساعات - جزئي (09:00 ص - 03:00 م)</option>
-                    <option value="CUSTOM_WORK" data-start="08:00" data-end="16:00" data-hours="8" data-name="دوام مخصص">دوام مخصص التوقيت</option>
-                    <option value="O" data-start="" data-end="" data-hours="0" data-name="راحة / إجازة">يوم راحة / إجازة (Off)</option>
-                  </select>
-                </div>
-                <div class="form-group col-3">
-                  <label class="form-label">وقت البدء:</label>
-                  <input type="time" id="custom-add-start-time" class="form-control glass-input" value="07:00">
-                </div>
-                <div class="form-group col-3">
-                  <label class="form-label">وقت الانتهاء:</label>
-                  <input type="time" id="custom-add-end-time" class="form-control glass-input" value="19:00">
-                </div>
-                <div class="form-group col-2" style="display: flex; align-items: flex-end;">
-                  <button type="button" class="btn btn-primary w-100" id="btn-custom-add-custom-step" style="height: 42px; font-weight: 700;">
-                    <i class="fa-solid fa-plus"></i> إضافة
+              <!-- Quick Time Fillers -->
+              <div style="margin-bottom: 12px;">
+                <span style="font-size: 11.5px; color: var(--text-muted); display: block; margin-bottom: 6px;">أزرار تعبئة سريعة للتوقيت (أو حدد الوقت بالدقائق في الخانات بالأسفل):</span>
+                <div class="quick-add-chips" style="flex-wrap: wrap; gap: 6px;">
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="07:00" data-end="19:00" data-title="دوام 12س (نهار)">
+                    ☀️ 12س نهار (07:00 - 19:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="19:00" data-end="07:00" data-title="دوام 12س (ليل)">
+                    🌙 12س ليل (19:00 - 07:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="08:00" data-end="16:00" data-title="دوام 8س (صباحي)">
+                    🌅 8س صباحي (08:00 - 16:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="16:00" data-end="00:00" data-title="دوام 8س (مسائي)">
+                    🌇 8س مسائي (16:00 - 00:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="00:00" data-end="08:00" data-title="دوام 8س (ليلي)">
+                    🌌 8س ليلي (00:00 - 08:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="08:00" data-end="08:00" data-title="استلام 24س">
+                    ⚡ 24س استلام (08:00 - 08:00)
+                  </button>
+                  <button type="button" class="btn btn-sm glass-btn btn-quick-fill-time" data-start="" data-end="" data-title="يوم راحة" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4);">
+                    🏖️ يوم راحة / إجازة
                   </button>
                 </div>
               </div>
+
+              <!-- Inputs for Start Time, End Time & Title -->
+              <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1.2fr auto; gap: 10px; align-items: end;">
+                <div class="form-group" id="group-start-time">
+                  <label class="form-label" style="font-size: 12px; font-weight: 700;">
+                    <i class="fa-regular fa-clock" style="color: var(--primary-400);"></i> وقت البداية:
+                  </label>
+                  <input type="time" id="manual-step-start-time" class="form-control glass-input" value="07:00" style="min-height: 42px; font-weight: 700; font-size: 14px;">
+                </div>
+
+                <div class="form-group" id="group-end-time">
+                  <label class="form-label" style="font-size: 12px; font-weight: 700;">
+                    <i class="fa-regular fa-clock" style="color: var(--rose-400);"></i> وقت النهاية:
+                  </label>
+                  <input type="time" id="manual-step-end-time" class="form-control glass-input" value="19:00" style="min-height: 42px; font-weight: 700; font-size: 14px;">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" style="font-size: 12px; font-weight: 700;">
+                    <i class="fa-solid fa-tag"></i> مسمى هذا اليوم:
+                  </label>
+                  <input type="text" id="manual-step-title" class="form-control glass-input" value="دوام 12س (نهار)" placeholder="مثال: دوام 12س أو شفت صباحي" style="min-height: 42px;">
+                </div>
+
+                <div class="form-group">
+                  <button type="button" class="btn btn-primary" id="btn-add-manual-pattern-step" style="min-height: 42px; padding: 0 16px; font-weight: 800; white-space: nowrap;">
+                    <i class="fa-solid fa-plus"></i> + إضافة لجدول الدورة
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sequence List Header -->
+            <div class="builder-actions-bar mt-3" style="display: flex; align-items: center; justify-content: space-between;">
+              <span class="sequence-length-label" style="font-size: 13px; font-weight: 700;">
+                <i class="fa-solid fa-list-ol"></i> تتابع أيام دورتك (<strong id="custom-pattern-length" style="color: var(--emerald-400);">0</strong> أيام مضافة):
+              </span>
+              <button type="button" class="btn btn-sm btn-secondary glass-btn" id="btn-clear-pattern-strip" style="font-size: 11.5px; padding: 4px 10px;">
+                <i class="fa-solid fa-trash-can"></i> مسح الكل
+              </button>
+            </div>
+
+            <!-- Pattern Sequence Visual Strip -->
+            <div class="pattern-sequence-strip" id="custom-pattern-strip" style="margin-top: 8px;">
+              <!-- Pattern items draggable/removable -->
             </div>
 
             <div class="form-row mt-3">
