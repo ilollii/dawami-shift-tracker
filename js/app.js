@@ -645,18 +645,76 @@ document.addEventListener('DOMContentLoaded', () => {
     // Day Override Save & Reset
     const btnSaveDayOverride = document.getElementById('btn-save-day-override');
     const btnResetDayOverride = document.getElementById('btn-reset-day-override');
+    const dayStartTimeInput = document.getElementById('day-override-start-time');
+    const dayEndTimeInput = document.getElementById('day-override-end-time');
+    const dayLiveHoursBadge = document.getElementById('day-override-live-hours-badge');
+    const dayOverrideSelect = document.getElementById('day-override-type');
+
+    function updateDayModalHours() {
+      if (!dayStartTimeInput || !dayEndTimeInput || !dayLiveHoursBadge) return;
+      const s = dayStartTimeInput.value;
+      const e = dayEndTimeInput.value;
+      const t = dayOverrideSelect ? dayOverrideSelect.value : '';
+
+      if (t === 'OFF' || t === 'ANNUAL_LEAVE' || t === 'SICK_LEAVE') {
+        dayLiveHoursBadge.textContent = '🏖️ راحة / إجازة (0س)';
+        dayLiveHoursBadge.style.color = '#34d399';
+        return;
+      }
+
+      if (s && e) {
+        const h = engine.calcHours(s, e);
+        dayLiveHoursBadge.textContent = `${h} ساعات عمل (${s} إلى ${e})`;
+        dayLiveHoursBadge.style.color = h >= 12 ? '#38bdf8' : '#34d399';
+      }
+    }
+
+    if (dayStartTimeInput) dayStartTimeInput.addEventListener('input', updateDayModalHours);
+    if (dayEndTimeInput) dayEndTimeInput.addEventListener('input', updateDayModalHours);
+    if (dayOverrideSelect) dayOverrideSelect.addEventListener('change', updateDayModalHours);
+
+    // Quick Day Time Fillers
+    document.querySelectorAll('.btn-day-quick-time').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const s = btn.getAttribute('data-start');
+        const e = btn.getAttribute('data-end');
+        const t = btn.getAttribute('data-title');
+
+        if (s !== null && dayStartTimeInput) dayStartTimeInput.value = s;
+        if (e !== null && dayEndTimeInput) dayEndTimeInput.value = e;
+
+        if (dayOverrideSelect) {
+          if (!s && !e) dayOverrideSelect.value = 'OFF';
+          else if (t.includes('12س نهار')) dayOverrideSelect.value = 'WORK_12H_DAY';
+          else if (t.includes('12س ليل')) dayOverrideSelect.value = 'WORK_12H_NIGHT';
+          else if (t.includes('24س')) dayOverrideSelect.value = 'DUTY_24H';
+          else dayOverrideSelect.value = 'CUSTOM_TIMES';
+        }
+
+        updateDayModalHours();
+      });
+    });
 
     if (btnSaveDayOverride) {
       btnSaveDayOverride.addEventListener('click', () => {
         if (!selectedDayDateKey) return;
         const overrideType = document.getElementById('day-override-type').value;
         const overrideNote = document.getElementById('day-override-note').value;
+        const sTime = dayStartTimeInput ? dayStartTimeInput.value : '08:00';
+        const eTime = dayEndTimeInput ? dayEndTimeInput.value : '16:00';
 
         if (overrideType === 'DEFAULT') {
           delete overrides[selectedDayDateKey];
         } else {
+          const isOff = overrideType === 'OFF' || overrideType === 'ANNUAL_LEAVE' || overrideType === 'SICK_LEAVE';
+          const hours = isOff ? 0 : engine.calcHours(sTime, eTime);
+
           overrides[selectedDayDateKey] = {
             type: overrideType,
+            startTime: isOff ? null : sTime,
+            endTime: isOff ? null : eTime,
+            hours: hours,
+            isWork: !isOff,
             note: overrideNote
           };
         }
@@ -664,7 +722,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveOverridesToStorage();
         refreshAllViews();
         closeModal('modal-day-details');
-        showToast('تم تحديث وحفظ تفاصيل هذا اليوم بنجاح!', 'success');
+        showToast('تم تحديث وحفظ توقيت وتفاصيل هذا اليوم بنجاح! ✨', 'success');
       });
     }
 
@@ -817,13 +875,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate Override fields
     const overrideSelect = document.getElementById('day-override-type');
     const overrideNote = document.getElementById('day-override-note');
+    const sInput = document.getElementById('day-override-start-time');
+    const eInput = document.getElementById('day-override-end-time');
+    const badge = document.getElementById('day-override-live-hours-badge');
 
     if (overrides[dateKey]) {
       overrideSelect.value = overrides[dateKey].type;
       overrideNote.value = overrides[dateKey].note || '';
+      if (sInput) sInput.value = overrides[dateKey].startTime || shift.startTime || '08:00';
+      if (eInput) eInput.value = overrides[dateKey].endTime || shift.endTime || '16:00';
     } else {
       overrideSelect.value = 'DEFAULT';
       overrideNote.value = '';
+      if (sInput) sInput.value = shift.startTime || '08:00';
+      if (eInput) eInput.value = shift.endTime || '16:00';
+    }
+
+    if (badge && sInput && eInput) {
+      if (!shift.isWork && (!overrides[dateKey] || !overrides[dateKey].isWork)) {
+        badge.textContent = '🏖️ راحة / إجازة (0س)';
+        badge.style.color = '#34d399';
+      } else {
+        const h = engine.calcHours(sInput.value, eInput.value);
+        badge.textContent = `${h} ساعات عمل (${sInput.value} إلى ${eInput.value})`;
+        badge.style.color = h >= 12 ? '#38bdf8' : '#34d399';
+      }
     }
 
     openModal('modal-day-details');

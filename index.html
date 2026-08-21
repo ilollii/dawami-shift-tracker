@@ -637,19 +637,22 @@
 
         <!-- Custom Override / Shift Swap Form -->
         <div class="override-section mt-3">
-          <h4 class="section-title"><i class="fa-solid fa-pen-to-square"></i> تعديل مخصص لهذا اليوم فقط:</h4>
-          <p class="helper-text">يمكنك تبديل الوردية مع زميل، تسجيل إجازة سنوية، أو عمل إضافي:</p>
+          <h4 class="section-title" style="font-size: 14px; font-weight: 800; margin-bottom: 8px;">
+            <i class="fa-solid fa-pen-to-square color-primary"></i> 
+            <span>تعديل وتحديد وقت هذا اليوم بنفسك:</span>
+          </h4>
           
-          <div class="form-group mt-2">
-            <label class="form-label">حالة اليوم المعدلة:</label>
-            <select id="day-override-type" class="form-control glass-input">
+          <div class="form-group mb-2">
+            <label class="form-label" style="font-size: 12px; font-weight: 700;">نوع أو حالة اليوم:</label>
+            <select id="day-override-type" class="form-control glass-input" style="font-size: 13.5px; font-weight: 700;">
               <option value="DEFAULT">الوضع الطبيعي حسب الجدول التلقائي</option>
-              <option value="DUTY_24H">⚡ استلام كامل 24 ساعة (24-Hour Duty)</option>
+              <option value="CUSTOM_TIMES">⏱️ تحديد وقت بداية ونهاية مخصص لهذا اليوم</option>
               <option value="WORK_12H_DAY">☀️ دوام 12 ساعة - نهار (07:00 ص - 07:00 م)</option>
               <option value="WORK_12H_NIGHT">🌙 دوام 12 ساعة - ليل (07:00 م - 07:00 ص)</option>
               <option value="WORK_DAY">🌅 دوام 8 ساعات - صباحي (08:00 ص - 04:00 م)</option>
               <option value="WORK_EVENING">🌇 دوام 8 ساعات - مسائي (04:00 م - 12:00 ص)</option>
               <option value="WORK_NIGHT">🌌 دوام 8 ساعات - ليلي (12:00 ص - 08:00 ص)</option>
+              <option value="DUTY_24H">⚡ استلام كامل 24 ساعة (08:00 ص - 08:00 ص)</option>
               <option value="WORK_6H">⏱️ دوام 6 ساعات - جزئي (09:00 ص - 03:00 م)</option>
               <option value="OFF">🏖️ راحة / إجازة (عطلة أو تبديل)</option>
               <option value="ANNUAL_LEAVE">🌴 إجازة سنوية / اعتيادية</option>
@@ -658,8 +661,41 @@
             </select>
           </div>
 
+          <!-- Direct Start Time & End Time Inputs for This Specific Day -->
+          <div class="day-time-inputs-box glass-inner p-2 mb-2" id="day-time-custom-inputs" style="border-radius: var(--radius-sm); border: 1px solid var(--glass-inner-border);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">
+                <i class="fa-regular fa-clock"></i> وقت البداية والنهاية لهذا اليوم:
+              </span>
+              <span id="day-override-live-hours-badge" style="font-size: 11px; font-weight: 800; color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 8px;">
+                8 ساعات
+              </span>
+            </div>
+            
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; font-weight: 600;">وقت البداية:</label>
+                <input type="time" id="day-override-start-time" class="form-control glass-input" value="08:00" style="min-height: 38px; font-weight: 700;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" style="font-size: 11px; font-weight: 600;">وقت النهاية:</label>
+                <input type="time" id="day-override-end-time" class="form-control glass-input" value="16:00" style="min-height: 38px; font-weight: 700;">
+              </div>
+            </div>
+
+            <!-- Quick filler pills for day modal -->
+            <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="07:00" data-end="19:00" data-title="دوام 12س (نهار)" style="font-size: 10px; padding: 2px 6px;">12س نهار</button>
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="19:00" data-end="07:00" data-title="دوام 12س (ليل)" style="font-size: 10px; padding: 2px 6px;">12س ليل</button>
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="08:00" data-end="16:00" data-title="دوام 8س (صباحي)" style="font-size: 10px; padding: 2px 6px;">8س صباحي</button>
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="16:00" data-end="00:00" data-title="دوام 8س (مسائي)" style="font-size: 10px; padding: 2px 6px;">8س مسائي</button>
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="08:00" data-end="08:00" data-title="استلام 24س" style="font-size: 10px; padding: 2px 6px;">24س استلام</button>
+              <button type="button" class="btn btn-sm glass-btn btn-day-quick-time" data-start="" data-end="" data-title="راحة" style="font-size: 10px; padding: 2px 6px;">راحة</button>
+            </div>
+          </div>
+
           <div class="form-group mt-2">
-            <label class="form-label">ملاحظات / اسم الزميل المتبادل معه:</label>
+            <label class="form-label" style="font-size: 12px; font-weight: 700;">ملاحظات / اسم الزميل المتبادل معه:</label>
             <input type="text" id="day-override-note" class="form-control glass-input" placeholder="مثال: تم التبديل مع محمد الشمري">
           </div>
         </div>

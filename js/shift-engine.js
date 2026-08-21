@@ -333,19 +333,24 @@ class ShiftEngine {
     if (this.overrides[dateKey]) {
       const ov = this.overrides[dateKey];
       if (ov.type !== 'DEFAULT') {
-        const baseShift = SHIFT_TYPES[ov.type] || SHIFT_TYPES.OFF;
+        const baseShift = SHIFT_TYPES[ov.type] || (ov.isWork ? SHIFT_TYPES.WORK_DAY : SHIFT_TYPES.OFF);
+        const isWork = ov.isWork !== undefined ? ov.isWork : (ov.type !== 'OFF' && ov.type !== 'ANNUAL_LEAVE' && ov.type !== 'SICK_LEAVE');
+        const sTime = isWork ? (ov.startTime !== undefined ? ov.startTime : baseShift.startTime) : null;
+        const eTime = isWork ? (ov.endTime !== undefined ? ov.endTime : baseShift.endTime) : null;
+        const hours = isWork ? (ov.hours !== undefined ? ov.hours : (sTime && eTime ? this.calcHours(sTime, eTime) : baseShift.hours)) : 0;
+
         return {
           dateKey,
           dateObj,
           type: ov.type,
-          name: ov.type === 'OFF' ? 'راحة (معدلة)' : baseShift.nameAr,
+          name: ov.title || (ov.type === 'OFF' ? 'راحة (معدلة)' : baseShift.nameAr),
           nameEn: baseShift.nameEn,
-          isWork: baseShift.isWork,
-          startTime: baseShift.startTime,
-          endTime: baseShift.endTime,
-          hours: baseShift.hours,
-          colorClass: baseShift.colorClass,
-          dotClass: baseShift.dotClass,
+          isWork,
+          startTime: sTime,
+          endTime: eTime,
+          hours,
+          colorClass: ov.colorClass || baseShift.colorClass || (isWork ? (hours >= 24 ? 'pill-duty24' : (hours >= 12 ? 'pill-day12' : 'pill-work')) : 'pill-off'),
+          dotClass: baseShift.dotClass || (isWork ? 'dot-work' : 'dot-off'),
           isOverride: true,
           overrideNote: ov.note || ''
         };
@@ -358,16 +363,28 @@ class ShiftEngine {
       const isWork = this.config.weekly.workDays.includes(dayOfWeek);
 
       if (isWork) {
+        const daySched = (this.config.weekly.daySchedules && this.config.weekly.daySchedules[dayOfWeek]) || {};
+        const sTime = daySched.startTime || this.config.weekly.startTime || '08:00';
+        const eTime = daySched.endTime || this.config.weekly.endTime || '16:00';
+        const shiftTitle = daySched.title || this.config.weekly.title || 'دوام رسمي';
+        const hours = daySched.hours || this.calcHours(sTime, eTime) || 8;
+
         return {
           dateKey,
           dateObj,
           type: 'WORK_DAY',
-          name: this.config.weekly.title || 'دوام رسمي',
+          name: shiftTitle,
           nameEn: 'Regular Work',
           isWork: true,
-          startTime: this.config.weekly.startTime || '08:00',
-          endTime: this.config.weekly.endTime || '16:00',
-          hours: this.calcHours(this.config.weekly.startTime, this.config.weekly.endTime) || 8,
+          startTime: sTime,
+          endTime: eTime,
+          hours: hours,
+          colorClass: hours >= 24 ? 'pill-duty24' : (hours >= 12 ? 'pill-day12' : 'pill-work'),
+          dotClass: 'dot-work',
+          isOverride: false,
+          overrideNote: ''
+        };
+      } else {
           colorClass: 'pill-work',
           dotClass: 'dot-work',
           isOverride: false,
