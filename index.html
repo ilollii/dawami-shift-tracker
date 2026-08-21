@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دوامي | حاسبة وجدول الورديات وأيام العمل والراحة</title>
+  <meta name="description" content="تطبيق ذكي وشامل لحساب وتتبع مواعيد الدوام، الورديات، أيام الراحة، الإجازات القادمة، مع تقويم تفاعلي وتصدير لتقويم الهاتف.">
+  
+  <!-- Google Fonts: Cairo & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons (Free CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header / Navigation Bar -->
+    <header class="main-header glass-card">
+      <div class="header-brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="logo-text">
+          <h1 class="app-title">دوامـي <span class="badge-pro">PRO</span></h1>
+          <p class="app-subtitle" id="app-subtitle-text">حاسبة وجدول الورديات وأيام الراحة</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- User Profile & Name Registration -->
+        <button id="btn-user-profile" class="btn btn-secondary glass-btn user-profile-btn" title="تسجيل وتخصيص الاسم">
+          <i class="fa-solid fa-circle-user"></i>
+          <span class="btn-text" id="header-user-display-name">تسجيل الاسم</span>
+        </button>
+
+        <!-- Quick System Preset Indicator -->
+        <button id="btn-quick-settings" class="btn btn-secondary glass-btn" title="تغيير نظام الدوام">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="btn-text" id="current-system-badge">الدوام الأسبوعي</span>
+        </button>
+
+        <!-- Export & Share -->
+        <button id="btn-export-menu" class="btn btn-secondary glass-btn" title="تصدير ومزامنة التقويم">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          <span class="btn-text">تصدير</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="btn-toggle-theme" class="btn-icon glass-btn" title="تبديل المظهر (ليلي / نهاري)">
+          <i class="fa-solid fa-sun icon-light"></i>
+          <i class="fa-solid fa-moon icon-dark"></i>
+        </button>
+
+        <!-- Language Switch -->
+        <button id="btn-toggle-lang" class="btn-icon glass-btn" title="Switch Language">
+          <span class="lang-text">EN</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-layout">
+      
+      <!-- Top Banner: Today's Status & Live Countdown Card -->
+      <section class="today-hero-section">
+        <div class="today-card glass-card" id="today-status-card">
+          <!-- Left side: Status badge & icon -->
+          <div class="status-visual">
+            <div class="status-avatar pulse-effect" id="today-status-avatar">
+              <i class="fa-solid fa-briefcase" id="today-status-icon"></i>
+            </div>
+            <div class="status-info">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px;">
+                <span class="today-date-tag" id="hero-today-date">اليوم: الخميس، 20 أغسطس 2026</span>
+                <span class="user-greeting-pill" id="hero-user-greeting" style="display: none; background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                  <i class="fa-solid fa-user"></i> <span id="hero-user-name-text"></span>
+                </span>
+              </div>
+              <h2 class="status-headline" id="hero-status-headline">هل أنا مداوم اليوم؟</h2>
+              <div class="status-badge-container">
+                <span class="main-status-badge" id="hero-status-pill">جاري التحقق...</span>
+                <span class="shift-name-badge" id="hero-shift-name">صباحي</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle side: Shift Hours & details -->
+          <div class="shift-meta-details">
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-regular fa-clock"></i> ساعات العمل</span>
+              <span class="meta-value" id="hero-shift-hours">08:00 ص - 04:00 م (8 ساعات)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-solid fa-location-dot"></i> موقع / طبيعة العمل</span>
+              <span class="meta-value" id="hero-shift-location">المقر الرئيسي</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-regular fa-calendar-days"></i> حالة الغد</span>
+              <span class="meta-value" id="hero-tomorrow-status">راحة / إجازة</span>
+            </div>
+          </div>
+
+          <!-- Right side: Next Event Countdown Widget -->
+          <div class="countdown-widget glass-inner">
+            <div class="countdown-header">
+              <i class="fa-solid fa-hourglass-half"></i>
+              <span id="countdown-title">المتبقي على بداية الدوام:</span>
+            </div>
+            <div class="countdown-timer" id="countdown-timer">
+              <div class="time-box">
+                <span class="time-num" id="timer-days">00</span>
+                <span class="time-unit">يوم</span>
+              </div>
+              <span class="time-colon">:</span>
+              <div class="time-box">
+                <span class="time-num" id="timer-hours">00</span>
+                <span class="time-unit">ساعة</span>
+              </div>
+              <span class="time-colon">:</span>
+              <div class="time-box">
+                <span class="time-num" id="timer-mins">00</span>
+                <span class="time-unit">دقيقة</span>
+              </div>
+              <span class="time-colon">:</span>
+              <div class="time-box">
+                <span class="time-num" id="timer-secs">00</span>
+                <span class="time-unit">ثانية</span>
+              </div>
+            </div>
+            <div class="countdown-target-time" id="countdown-target-date">
+              الدوام القادم: الجمعة 08:00 ص
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Metrics Bar -->
+      <section class="metrics-grid">
+        <div class="metric-card glass-card">
+          <div class="metric-icon color-blue">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="metric-body">
+            <span class="metric-title" id="lbl-month-work-days">أيام الدوام هذا الشهر</span>
+            <div class="metric-val-wrap">
+              <span class="metric-value" id="stat-month-work-days">0</span>
+              <span class="metric-unit">يوم</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card glass-card">
+          <div class="metric-icon color-emerald">
+            <i class="fa-solid fa-bed"></i>
+          </div>
+          <div class="metric-body">
+            <span class="metric-title" id="lbl-month-off-days">أيام الراحة هذا الشهر</span>
+            <div class="metric-val-wrap">
+              <span class="metric-value" id="stat-month-off-days">0</span>
+              <span class="metric-unit">يوم</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card glass-card">
+          <div class="metric-icon color-purple">
+            <i class="fa-solid fa-business-time"></i>
+          </div>
+          <div class="metric-body">
+            <span class="metric-title" id="lbl-month-work-hours">إجمالي ساعات العمل</span>
+            <div class="metric-val-wrap">
+              <span class="metric-value" id="stat-month-work-hours">0</span>
+              <span class="metric-unit">ساعة</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card glass-card">
+          <div class="metric-icon color-amber">
+            <i class="fa-solid fa-umbrella-beach"></i>
+          </div>
+          <div class="metric-body">
+            <span class="metric-title" id="lbl-next-off-streak">أقرب فترة إجازة متصلة</span>
+            <div class="metric-val-wrap">
+              <span class="metric-value" id="stat-next-off-streak">0</span>
+              <span class="metric-unit" id="stat-next-off-unit">أيام</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Calendar & Interactive Main Section -->
+      <section class="content-body-grid">
+        
+        <!-- Left / Center: Interactive Calendar Card -->
+        <div class="calendar-card glass-card">
+          <!-- Calendar Toolbar -->
+          <div class="calendar-toolbar">
+            <div class="calendar-nav">
+              <button id="cal-btn-prev" class="btn-icon glass-btn" title="الشهر السابق">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+              <h3 class="calendar-current-title" id="calendar-month-year-label">أغسطس 2026</h3>
+              <button id="cal-btn-next" class="btn-icon glass-btn" title="الشهر التالي">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button id="cal-btn-today" class="btn btn-secondary glass-btn btn-sm">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>اليوم</span>
+              </button>
+            </div>
+
+            <!-- View switchers (Month / Year Heatmap / List) -->
+            <div class="view-switchers">
+              <div class="btn-group glass-btn-group">
+                <button class="btn-tab active" data-view="month" id="tab-view-month">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>شهري</span>
+                </button>
+                <button class="btn-tab" data-view="year" id="tab-view-year">
+                  <i class="fa-solid fa-table-cells"></i>
+                  <span>سنوي</span>
+                </button>
+                <button class="btn-tab" data-view="shifts" id="tab-view-shifts">
+                  <i class="fa-solid fa-list-check"></i>
+                  <span>قائمة الورديات</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Legend Bar -->
+          <div class="shift-legend-bar" id="shift-legend-bar">
+            <!-- Dynamically populated legends -->
+          </div>
+
+          <!-- Calendar View Container -->
+          <div class="calendar-view-wrapper">
+            
+            <!-- 1. Monthly Grid View -->
+            <div class="view-panel active" id="view-month-grid">
+              <div class="calendar-weekdays-header" id="calendar-weekdays-header">
+                <span>الأحد</span>
+                <span>الإثنين</span>
+                <span>الثلاثاء</span>
+                <span>الأربعاء</span>
+                <span>الخميس</span>
+                <span>الجمعة</span>
+                <span>السبت</span>
+              </div>
+              <div class="calendar-days-grid" id="calendar-days-grid">
+                <!-- Dynamically rendered day cells -->
+              </div>
+            </div>
+
+            <!-- 2. Yearly View Heatmap -->
+            <div class="view-panel" id="view-year-grid">
+              <div class="yearly-controls">
+                <button id="year-btn-prev" class="btn-icon glass-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                <h4 id="year-label">عام 2026</h4>
+                <button id="year-btn-next" class="btn-icon glass-btn"><i class="fa-solid fa-chevron-left"></i></button>
+              </div>
+              <div class="yearly-months-grid" id="yearly-months-grid">
+                <!-- 12 mini month widgets -->
+              </div>
+            </div>
+
+            <!-- 3. Shifts List / Schedule Timeline View -->
+            <div class="view-panel" id="view-shifts-list">
+              <div class="shifts-list-container" id="shifts-list-container">
+                <!-- Upcoming 30 days list -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Side: Sidebar with Smart Helpers, Quick Check & Shift Editor -->
+        <aside class="sidebar-column">
+          
+          <!-- Smart Date Inspector / "هل سأكون مداوم في هذا التاريخ؟" -->
+          <div class="sidebar-card glass-card">
+            <div class="card-header-with-icon">
+              <div class="card-header-icon color-cyan">
+                <i class="fa-solid fa-magnifying-glass-calendar"></i>
+              </div>
+              <div class="card-header-text">
+                <h4>فحص تاريخ مستقبلي</h4>
+                <p>تأكد هل ستكون مداوم في مناسبة أو يوم معين</p>
+              </div>
+            </div>
+            <div class="quick-check-form">
+              <label for="check-target-date" class="form-label">اختر التاريخ للفحص:</label>
+              <div class="input-with-action">
+                <input type="date" id="check-target-date" class="form-control glass-input">
+                <button id="btn-run-check" class="btn btn-primary">
+                  <i class="fa-solid fa-check"></i>
+                  <span>فحص</span>
+                </button>
+              </div>
+              <div class="check-result-box hidden" id="check-result-box">
+                <div class="result-status-icon" id="check-result-icon">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="result-status-details">
+                  <strong class="result-title" id="check-result-title">يوم راحة (إجازة)</strong>
+                  <span class="result-desc" id="check-result-desc">ليس لديك دوام في هذا اليوم، استمتع بإجازتك!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leave & Next Breaks Smart Planner (بدلاً من حاسبة الراتب) -->
+          <div class="sidebar-card glass-card">
+            <div class="card-header-with-icon">
+              <div class="card-header-icon color-amber">
+                <i class="fa-solid fa-umbrella-beach"></i>
+              </div>
+              <div class="card-header-text">
+                <h4>مخطط الإجازات وفترات الراحة</h4>
+                <p>استكشف أقرب فترات الراحة وأفضل أوقات الإجازة</p>
+              </div>
+            </div>
+            <div class="leave-planner-box">
+              <div class="next-break-card glass-inner p-3 mb-2">
+                <div class="break-head d-flex justify-content-between align-items-center mb-1">
+                  <span class="break-label text-muted"><i class="fa-regular fa-clock"></i> أقرب فترة راحة قادمة:</span>
+                  <strong class="break-duration" id="planner-next-break-duration">4 أيام</strong>
+                </div>
+                <div class="break-dates" id="planner-next-break-dates">
+                  تبدأ: الجمعة، 28 أغسطس
+                </div>
+              </div>
+
+              <div class="leave-optimizer-card glass-inner p-3">
+                <span class="optimizer-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--amber-500)"></i> مضاعف الإجازات الذكي:</span>
+                <p class="optimizer-desc text-muted mt-1" id="planner-smart-tip">
+                  إذا أخذت إجازة يوم <strong>الخميس</strong>، ستحصل على <strong>5 أيام راحة متتالية</strong> برصيد يوم واحد فقط!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Tools & Templates Shortcuts -->
+          <div class="sidebar-card glass-card">
+            <div class="card-header-with-icon">
+              <div class="card-header-icon color-emerald">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div class="card-header-text">
+                <h4>إجراءات سريعة</h4>
+                <p>تخصيص النظام أو تبديل شفت</p>
+              </div>
+            </div>
+            <div class="quick-action-buttons">
+              <button id="btn-open-settings" class="btn btn-secondary glass-btn w-100 mb-2">
+                <i class="fa-solid fa-gear"></i>
+                <span>إعدادات وتخصيص نظام الدوام</span>
+              </button>
+              <button id="btn-quick-swap" class="btn btn-secondary glass-btn w-100 mb-2">
+                <i class="fa-solid fa-repeat"></i>
+                <span>تسجيل تبديل وردية مع زميل</span>
+              </button>
+              <button id="btn-print-schedule" class="btn btn-secondary glass-btn w-100">
+                <i class="fa-solid fa-print"></i>
+                <span>طباعة جدول الشهر بتنسيق رسمي</span>
+              </button>
+            </div>
+          </div>
+
+        </aside>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="footer-content">
+        <p>دوامـي &copy; 2026 — رفيقك الذكي لتنظيم الورديات وأيام العمل والراحة. جميع الحقوق محفوظة.</p>
+        <div class="footer-links">
+          <span class="status-indicator-live"><span class="dot"></span> يعمل محلياً وآمن 100%</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== MODALS & POPUPS ==================== -->
+
+  <!-- 1. System Settings & Shift Customizer Modal -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-dialog glass-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-sliders"></i>
+          <h3>إعدادات نظام الدوام والورديات</h3>
+        </div>
+        <button class="btn-close-modal" data-close="modal-settings">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Tabs for System Selection: Standard Weekly, Rotation Presets, Custom Builder -->
+        <div class="settings-tabs-nav">
+          <button class="setting-tab active" data-tab="tab-presets">
+            <i class="fa-solid fa-shapes"></i>
+            <span>الأنظمة الجاهزة والورديات</span>
+          </button>
+          <button class="setting-tab" data-tab="tab-weekly">
+            <i class="fa-solid fa-calendar-week"></i>
+            <span>الدوام الأسبوعي الثابت</span>
+          </button>
+          <button class="setting-tab" data-tab="tab-custom">
+            <i class="fa-solid fa-puzzle-piece"></i>
+            <span>منشئ النمط المخصص</span>
+          </button>
+        </div>
+
+        <!-- 1. Presets Tab -->
+        <div class="setting-tab-content active" id="tab-presets">
+          <p class="tab-description">اختر من أنظمة الورديات التناوبية الأكثر شيوعاً في مختلف القطاعات:</p>
+          
+          <div class="preset-cards-grid" id="preset-cards-container">
+            <!-- Preset items will be rendered by JS -->
+          </div>
+
+          <div class="preset-config-box glass-inner mt-3">
+            <h4><i class="fa-regular fa-calendar"></i> تاريخ بدء الدورة (Anchor Date):</h4>
+            <p class="helper-text">حدد تاريخ أول يوم بدأت فيه هذه الدورة أو أول يوم دوام:</p>
+            <div class="form-row align-items-center">
+              <div class="form-group col-6">
+                <input type="date" id="preset-start-date" class="form-control glass-input">
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label">الوردية في هذا التاريخ:</label>
+                <select id="preset-start-shift-select" class="form-control glass-input">
+                  <!-- options dynamically loaded -->
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Weekly Fixed Tab -->
+        <div class="setting-tab-content" id="tab-weekly">
+          <p class="tab-description">حدد أيام العمل الثابتة وأيام العطلة الأسبوعية وساعات الدوام:</p>
+          
+          <div class="weekly-days-selector">
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-0" value="0">
+              <span class="day-chip">الأحد</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-1" value="1">
+              <span class="day-chip">الإثنين</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-2" value="2">
+              <span class="day-chip">الثلاثاء</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-3" value="3">
+              <span class="day-chip">الأربعاء</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-4" value="4">
+              <span class="day-chip">الخميس</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-5" value="5">
+              <span class="day-chip">الجمعة</span>
+            </label>
+            <label class="day-checkbox-label">
+              <input type="checkbox" id="chk-day-6" value="6">
+              <span class="day-chip">السبت</span>
+            </label>
+          </div>
+
+          <div class="form-row mt-3">
+            <div class="form-group col-6">
+              <label class="form-label">وقت بداية الدوام:</label>
+              <input type="time" id="weekly-start-time" class="form-control glass-input" value="08:00">
+            </div>
+            <div class="form-group col-6">
+              <label class="form-label">وقت نهاية الدوام:</label>
+              <input type="time" id="weekly-end-time" class="form-control glass-input" value="16:00">
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <label class="form-label">مسمى الدوام:</label>
+            <input type="text" id="weekly-shift-title" class="form-control glass-input" value="دوام إداري رسمي">
+          </div>
+        </div>
+
+        <!-- 3. Custom Pattern Tab -->
+        <div class="setting-tab-content" id="tab-custom">
+          <p class="tab-description">أنشئ نمطاً مخصصاً بأي تتابع للأيام (مثال: 2 صباحي، 2 مسائي، 2 ليلي، 4 راحة):</p>
+          
+          <div class="custom-builder-container">
+            <div class="builder-actions-bar">
+              <span class="sequence-length-label">طول الدورة: <strong id="custom-pattern-length">0</strong> أيام</span>
+              <div class="quick-add-chips">
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="24H">
+                  <i class="fa-solid fa-plus"></i> + استلام 24س
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="D">
+                  <i class="fa-solid fa-plus"></i> + صباحي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="E">
+                  <i class="fa-solid fa-plus"></i> + مسائي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="N">
+                  <i class="fa-solid fa-plus"></i> + ليلي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="O">
+                  <i class="fa-solid fa-plus"></i> + راحة
+                </button>
+              </div>
+            </div>
+
+            <!-- Pattern Sequence Visual Strip -->
+            <div class="pattern-sequence-strip" id="custom-pattern-strip">
+              <!-- Pattern items draggable/removable -->
+            </div>
+
+            <div class="form-row mt-3">
+              <div class="form-group col-6">
+                <label class="form-label">تاريخ بدء النمط (اليوم الأول):</label>
+                <input type="date" id="custom-start-date" class="form-control glass-input">
+              </div>
+              <div class="form-group col-6">
+                <label class="form-label">اسم النظام المخصص:</label>
+                <input type="text" id="custom-system-name" class="form-control glass-input" value="ورديتي المخصصة">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modal-settings">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="btn-save-settings">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>حفظ وتطبيق الجدول</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Day Details & Shift Swap Modal -->
+  <div class="modal-backdrop" id="modal-day-details">
+    <div class="modal-dialog glass-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-calendar-day"></i>
+          <h3 id="modal-day-title">تفاصيل اليوم: 20 أغسطس 2026</h3>
+        </div>
+        <button class="btn-close-modal" data-close="modal-day-details">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Day summary badge -->
+        <div class="day-overview-banner glass-inner" id="modal-day-overview">
+          <div class="overview-icon" id="modal-day-icon">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="overview-text">
+            <h4 id="modal-day-shift-title">وردية صباحية</h4>
+            <p id="modal-day-shift-times">من 08:00 ص إلى 04:00 م (8 ساعات)</p>
+          </div>
+          <span class="day-type-tag" id="modal-day-type-tag">دوام رسمي</span>
+        </div>
+
+        <!-- Custom Override / Shift Swap Form -->
+        <div class="override-section mt-3">
+          <h4 class="section-title"><i class="fa-solid fa-pen-to-square"></i> تعديل مخصص لهذا اليوم فقط:</h4>
+          <p class="helper-text">يمكنك تبديل الوردية مع زميل، تسجيل إجازة سنوية، أو عمل إضافي:</p>
+          
+          <div class="form-group mt-2">
+            <label class="form-label">حالة اليوم المعدلة:</label>
+            <select id="day-override-type" class="form-control glass-input">
+              <option value="DEFAULT">الوضع الطبيعي حسب الجدول التلقائي</option>
+              <option value="DUTY_24H">استلام كامل 24 ساعة (24-Hour Duty)</option>
+              <option value="OFF">إجازة / راحة (تبديل أو إجازة اضطرارية)</option>
+              <option value="WORK_DAY">دوام صباحي (Day Shift)</option>
+              <option value="WORK_EVENING">دوام مسائي (Evening Shift)</option>
+              <option value="WORK_NIGHT">دوام ليلي (Night Shift)</option>
+              <option value="ANNUAL_LEAVE">إجازة سنوية / اعتيادية</option>
+              <option value="SICK_LEAVE">إجازة مرضية</option>
+              <option value="OVERTIME">تغطية وردية إضافية (Overtime)</option>
+            </select>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="form-label">ملاحظات / اسم الزميل المتبادل معه:</label>
+            <input type="text" id="day-override-note" class="form-control glass-input" placeholder="مثال: تم التبديل مع محمد الشمري">
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" id="btn-reset-day-override">
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>استعادة الجدول الأصلي</span>
+        </button>
+        <button type="button" class="btn btn-secondary" data-close="modal-day-details">إغلاق</button>
+        <button type="button" class="btn btn-primary" id="btn-save-day-override">
+          <i class="fa-solid fa-check"></i>
+          <span>حفظ التعديل</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Export & Calendar Sync Modal -->
+  <div class="modal-backdrop" id="modal-export">
+    <div class="modal-dialog glass-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          <h3>تصدير ومزامنة الجدول</h3>
+        </div>
+        <button class="btn-close-modal" data-close="modal-export">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="tab-description">اختر الطريقة التي تفضلها للاستفادة من جدولك على هاتفك أو مشاركته:</p>
+
+        <div class="export-options-list">
+          
+          <!-- Option 1: iCalendar File (.ics) -->
+          <div class="export-option-card glass-inner" id="export-btn-ics">
+            <div class="export-icon color-blue">
+              <i class="fa-solid fa-calendar-plus"></i>
+            </div>
+            <div class="export-info">
+              <h4>تصدير إلى تقويم الهاتف (.ICS)</h4>
+              <p>تنزيل ملف تقويم وإضافته مباشرة إلى تقويم آيفون (Apple Calendar)، أندرويد (Google Calendar) أو أوتلوك مع تنبيهات تلقائية قبل كل وردية.</p>
+            </div>
+            <button class="btn btn-primary btn-sm">تنزيل .ICS</button>
+          </div>
+
+          <!-- Option 2: Print / PDF -->
+          <div class="export-option-card glass-inner" id="export-btn-print">
+            <div class="export-icon color-emerald">
+              <i class="fa-solid fa-print"></i>
+            </div>
+            <div class="export-info">
+              <h4>طباعة الجدول أو حفظ كـ PDF</h4>
+              <p>طباعة صفحة شهرية منسقة وجاهزة للتعليق أو الحفظ كمستند PDF عالي الجودة.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm">طباعة / PDF</button>
+          </div>
+
+          <!-- Option 3: Backup & Restore Data (JSON) -->
+          <div class="export-option-card glass-inner" id="export-btn-backup">
+            <div class="export-icon color-purple">
+              <i class="fa-solid fa-cloud-arrow-down"></i>
+            </div>
+            <div class="export-info">
+              <h4>نسخ احتياطي للبيانات (Backup JSON)</h4>
+              <p>حفظ نسخة من إعداداتك وملاحظاتك لنقلها إلى جهاز آخر أو استعادتها لاحقاً.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-download-backup">تنزيل النسخة</button>
+          </div>
+
+          <div class="import-box mt-3 p-2 glass-inner">
+            <label class="form-label"><i class="fa-solid fa-file-import"></i> استعادة نسخة احتياطية:</label>
+            <input type="file" id="input-import-backup" accept=".json" class="form-control glass-input">
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modal-export">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. User Name Registration Modal (تسجيل الاسم) -->
+  <div class="modal-backdrop" id="modal-user-registration">
+    <div class="modal-dialog glass-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-solid fa-id-card color-primary"></i>
+          <h3>تسجيل الاسم في دوامـي</h3>
+        </div>
+        <button class="btn-close-modal" data-close="modal-user-registration">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div class="overview-icon" style="margin: 0 auto 12px; background: linear-gradient(135deg, var(--primary-600), var(--primary-800)); width: 56px; height: 56px; border-radius: 50%; font-size: 24px; box-shadow: 0 4px 16px var(--primary-glow); display: flex; align-items: center; justify-content: center; color: white;">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <h4 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">أهلاً بك في تطبيق دوامـي 👋</h4>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">أدخل اسمك لتخصيص جدول وردياتك ومتابعة مواعيد دوامك وراحتك باسمك.</p>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" style="font-weight: 700; font-size: 13px;"><i class="fa-solid fa-user"></i> الاسم:</label>
+          <input type="text" id="input-register-name" class="form-control glass-input" style="font-size: 15px; min-height: 48px;" placeholder="اكتب اسمك الكريم (مثال: فيصل العتيبي)" maxlength="50" autocomplete="name" required onkeydown="if(event.key==='Enter') document.getElementById('btn-save-user-name').click()">
+        </div>
+
+        <div style="font-size: 11.5px; color: var(--text-muted); background: var(--glass-inner-bg); border: 1px solid var(--glass-inner-border); border-radius: var(--radius-sm); padding: 8px 10px; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-lock" style="color: var(--emerald-500);"></i>
+          <span>يتم حفظ اسمك وجدولك على جهازك بسرية وأمان تام دون أي مشاركة.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modal-user-registration">إلغاء</button>
+        <button type="button" class="btn btn-primary" id="btn-save-user-name" style="font-weight: 800; min-height: 44px;">
+          <i class="fa-solid fa-check"></i>
+          <span>حفظ وتفعيل الجدول ✨</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/shift-engine.js"></script>
+  <script src="js/calendar-view.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
