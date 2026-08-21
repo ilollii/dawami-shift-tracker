@@ -502,20 +502,29 @@
           <div class="custom-builder-container">
             <div class="builder-actions-bar">
               <span class="sequence-length-label">طول الدورة: <strong id="custom-pattern-length">0</strong> أيام</span>
-              <div class="quick-add-chips">
+              <div class="quick-add-chips" style="flex-wrap: wrap;">
                 <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="24H">
                   <i class="fa-solid fa-plus"></i> + استلام 24س
                 </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="D">
-                  <i class="fa-solid fa-plus"></i> + صباحي
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="12D" style="background: rgba(14, 165, 233, 0.2); border-color: rgba(14, 165, 233, 0.4);">
+                  <i class="fa-solid fa-plus"></i> + 12س نهار
                 </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="E">
-                  <i class="fa-solid fa-plus"></i> + مسائي
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="12N" style="background: rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.4);">
+                  <i class="fa-solid fa-plus"></i> + 12س ليل
                 </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="N">
-                  <i class="fa-solid fa-plus"></i> + ليلي
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8D">
+                  <i class="fa-solid fa-plus"></i> + 8س صباحي
                 </button>
-                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="O">
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8E">
+                  <i class="fa-solid fa-plus"></i> + 8س مسائي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="8N">
+                  <i class="fa-solid fa-plus"></i> + 8س ليلي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="6H">
+                  <i class="fa-solid fa-plus"></i> + 6س جزئي
+                </button>
+                <button type="button" class="btn btn-sm glass-btn add-shift-chip" data-type="O" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4);">
                   <i class="fa-solid fa-plus"></i> + راحة
                 </button>
               </div>
@@ -583,14 +592,17 @@
             <label class="form-label">حالة اليوم المعدلة:</label>
             <select id="day-override-type" class="form-control glass-input">
               <option value="DEFAULT">الوضع الطبيعي حسب الجدول التلقائي</option>
-              <option value="DUTY_24H">استلام كامل 24 ساعة (24-Hour Duty)</option>
-              <option value="OFF">إجازة / راحة (تبديل أو إجازة اضطرارية)</option>
-              <option value="WORK_DAY">دوام صباحي (Day Shift)</option>
-              <option value="WORK_EVENING">دوام مسائي (Evening Shift)</option>
-              <option value="WORK_NIGHT">دوام ليلي (Night Shift)</option>
-              <option value="ANNUAL_LEAVE">إجازة سنوية / اعتيادية</option>
-              <option value="SICK_LEAVE">إجازة مرضية</option>
-              <option value="OVERTIME">تغطية وردية إضافية (Overtime)</option>
+              <option value="DUTY_24H">⚡ استلام كامل 24 ساعة (24-Hour Duty)</option>
+              <option value="WORK_12H_DAY">☀️ دوام 12 ساعة - نهار (07:00 ص - 07:00 م)</option>
+              <option value="WORK_12H_NIGHT">🌙 دوام 12 ساعة - ليل (07:00 م - 07:00 ص)</option>
+              <option value="WORK_DAY">🌅 دوام 8 ساعات - صباحي (08:00 ص - 04:00 م)</option>
+              <option value="WORK_EVENING">🌇 دوام 8 ساعات - مسائي (04:00 م - 12:00 ص)</option>
+              <option value="WORK_NIGHT">🌌 دوام 8 ساعات - ليلي (12:00 ص - 08:00 ص)</option>
+              <option value="WORK_6H">⏱️ دوام 6 ساعات - جزئي (09:00 ص - 03:00 م)</option>
+              <option value="OFF">🏖️ راحة / إجازة (عطلة أو تبديل)</option>
+              <option value="ANNUAL_LEAVE">🌴 إجازة سنوية / اعتيادية</option>
+              <option value="SICK_LEAVE">🏥 إجازة مرضية</option>
+              <option value="OVERTIME">💼 تغطية وردية إضافية (Overtime)</option>
             </select>
           </div>
 

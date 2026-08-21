@@ -101,6 +101,8 @@
 }
 
 .legend-dot.dot-work { background: var(--primary-500); }
+.legend-dot.dot-day12 { background: #0ea5e9; }
+.legend-dot.dot-night12 { background: #a855f7; }
 .legend-dot.dot-duty24 { background: #ea580c; }
 .legend-dot.dot-off { background: var(--emerald-500); }
 .legend-dot.dot-eve { background: var(--amber-500); }
@@ -260,6 +262,24 @@
   background: var(--shift-leave-bg);
   color: var(--shift-leave-text);
   border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.pill-day12 {
+  background: rgba(14, 165, 233, 0.22);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+.pill-night12 {
+  background: rgba(168, 85, 247, 0.22);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+.pill-work6 {
+  background: rgba(20, 184, 166, 0.22);
+  color: #2dd4bf;
+  border: 1px solid rgba(20, 184, 166, 0.5);
 }
 
 .pill-overtime {

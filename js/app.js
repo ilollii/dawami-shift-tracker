@@ -344,9 +344,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const typeLabels = {
       '24H': isAr ? 'استلام 24س' : '24h Duty',
-      'D': isAr ? 'صباحي' : 'Day',
-      'E': isAr ? 'مسائي' : 'Evening',
-      'N': isAr ? 'ليلي' : 'Night',
+      '12D': isAr ? '12س نهار' : '12h Day',
+      '12N': isAr ? '12س ليل' : '12h Night',
+      '8D': isAr ? '8س صباحي' : '8h Day',
+      '8E': isAr ? '8س مسائي' : '8h Eve',
+      '8N': isAr ? '8س ليلي' : '8h Night',
+      '6H': isAr ? '6س جزئي' : '6h Shift',
+      'D': isAr ? 'صباحي (8س)' : 'Day (8h)',
+      'E': isAr ? 'مسائي (8س)' : 'Eve (8h)',
+      'N': isAr ? 'ليلي (8س)' : 'Night (8h)',
       'O': isAr ? 'راحة' : 'Off'
     };
 
@@ -629,6 +635,12 @@ document.addEventListener('DOMContentLoaded', () => {
           anchorDate,
           shiftConfigs: {
             '24H': SHIFT_TYPES.DUTY_24H,
+            '12D': SHIFT_TYPES.WORK_12H_DAY,
+            '12N': SHIFT_TYPES.WORK_12H_NIGHT,
+            '8D': SHIFT_TYPES.WORK_DAY,
+            '8E': SHIFT_TYPES.WORK_EVENING,
+            '8N': SHIFT_TYPES.WORK_NIGHT,
+            '6H': SHIFT_TYPES.WORK_6H,
             'D': SHIFT_TYPES.WORK_DAY,
             'E': SHIFT_TYPES.WORK_EVENING,
             'N': SHIFT_TYPES.WORK_NIGHT,

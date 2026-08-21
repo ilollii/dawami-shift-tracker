@@ -1053,9 +1053,15 @@ body[dir="ltr"] .shift-meta-details {
 }
 
 .strip-item.type-24H { background: linear-gradient(135deg, #ea580c, #c2410c); }
+.strip-item.type-12D { background: linear-gradient(135deg, #0284c7, #0369a1); }
+.strip-item.type-12N { background: linear-gradient(135deg, #9333ea, #7e22ce); }
+.strip-item.type-8D,
 .strip-item.type-D { background: var(--primary-600); }
+.strip-item.type-8E,
 .strip-item.type-E { background: var(--amber-600); }
+.strip-item.type-8N,
 .strip-item.type-N { background: var(--purple-600); }
+.strip-item.type-6H { background: linear-gradient(135deg, #0d9488, #0f766e); }
 .strip-item.type-O { background: var(--emerald-600); }
 
 .strip-item .btn-remove-step {

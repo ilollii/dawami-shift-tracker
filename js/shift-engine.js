@@ -5,8 +5,8 @@
 const SHIFT_TYPES = {
   WORK_DAY: {
     id: 'WORK_DAY',
-    nameAr: 'وردية صباحية (نهار)',
-    nameEn: 'Day Shift',
+    nameAr: 'وردية صباحية (8 ساعات)',
+    nameEn: 'Day Shift (8h)',
     code: 'D',
     isWork: true,
     startTime: '08:00',
@@ -17,8 +17,8 @@ const SHIFT_TYPES = {
   },
   WORK_EVENING: {
     id: 'WORK_EVENING',
-    nameAr: 'وردية مسائية',
-    nameEn: 'Evening Shift',
+    nameAr: 'وردية مسائية (8 ساعات)',
+    nameEn: 'Evening Shift (8h)',
     code: 'E',
     isWork: true,
     startTime: '16:00',
@@ -29,8 +29,8 @@ const SHIFT_TYPES = {
   },
   WORK_NIGHT: {
     id: 'WORK_NIGHT',
-    nameAr: 'وردية ليلية (سهرة)',
-    nameEn: 'Night Shift',
+    nameAr: 'وردية ليلية (8 ساعات)',
+    nameEn: 'Night Shift (8h)',
     code: 'N',
     isWork: true,
     startTime: '00:00',
@@ -38,6 +38,42 @@ const SHIFT_TYPES = {
     hours: 8,
     colorClass: 'pill-night',
     dotClass: 'dot-night'
+  },
+  WORK_12H_DAY: {
+    id: 'WORK_12H_DAY',
+    nameAr: 'دوام 12 ساعة (نهار)',
+    nameEn: '12-Hour Day Shift',
+    code: '12D',
+    isWork: true,
+    startTime: '07:00',
+    endTime: '19:00',
+    hours: 12,
+    colorClass: 'pill-day12',
+    dotClass: 'dot-day12'
+  },
+  WORK_12H_NIGHT: {
+    id: 'WORK_12H_NIGHT',
+    nameAr: 'دوام 12 ساعة (ليل)',
+    nameEn: '12-Hour Night Shift',
+    code: '12N',
+    isWork: true,
+    startTime: '19:00',
+    endTime: '07:00',
+    hours: 12,
+    colorClass: 'pill-night12',
+    dotClass: 'dot-night12'
+  },
+  WORK_6H: {
+    id: 'WORK_6H',
+    nameAr: 'دوام 6 ساعات (جزئي/رمضان)',
+    nameEn: '6-Hour Shift',
+    code: '6H',
+    isWork: true,
+    startTime: '09:00',
+    endTime: '15:00',
+    hours: 6,
+    colorClass: 'pill-work6',
+    dotClass: 'dot-work'
   },
   OFF: {
     id: 'OFF',
@@ -435,11 +471,20 @@ class ShiftEngine {
         '24H': SHIFT_TYPES.DUTY_24H,
         '24': SHIFT_TYPES.DUTY_24H,
         'F': SHIFT_TYPES.DUTY_24H,
+        '12D': SHIFT_TYPES.WORK_12H_DAY,
+        '12N': SHIFT_TYPES.WORK_12H_NIGHT,
+        '12': SHIFT_TYPES.WORK_12H_DAY,
+        '8D': SHIFT_TYPES.WORK_DAY,
+        '8E': SHIFT_TYPES.WORK_EVENING,
+        '8N': SHIFT_TYPES.WORK_NIGHT,
+        '6H': SHIFT_TYPES.WORK_6H,
+        '6': SHIFT_TYPES.WORK_6H,
         'D': SHIFT_TYPES.WORK_DAY,
         'E': SHIFT_TYPES.WORK_EVENING,
         'N': SHIFT_TYPES.WORK_NIGHT,
         'O': SHIFT_TYPES.OFF,
         'L': SHIFT_TYPES.ANNUAL_LEAVE,
+        'S': SHIFT_TYPES.SICK_LEAVE,
         'OT': SHIFT_TYPES.OVERTIME
       };
 
